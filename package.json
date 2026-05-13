@@ -1,0 +1,84 @@
+{
+  "name": "sumolab",
+  "version": "0.0.1",
+  "private": true,
+  "description": "streaming monorepo",
+  "keywords": [
+    "ai",
+    "Oxc",
+    "components",
+    "monorepo",
+    "netjs",
+    "tailwind",
+    "tailwindcss",
+    "template",
+    "turborepo",
+    "ui"
+  ],
+  "license": "MIT",
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "@dotenv-run/cli": "1.3.6",
+      "@types/bun": "1.3.13",
+      "@types/node": "25.6.2",
+      "@types/pg": "8.20.0",
+      "@turbo/gen": "2.9.12",
+      "tsdown": "0.22.0", 
+      "turbo": "2.9.12", 
+      "typescript": "6.0.3",
+      "oxfmt": "0.48.0",
+      "oxlint": "1.63.0",
+      "oxlint-tsgolint": "0.22.1",
+      "ultracite": "7.6.5",
+      "vite": "8.0.11",
+      "vitest": "4.1.5"
+    }
+  },
+  "type": "module",
+  "scripts": {
+    "analyze": "turbo analyze",
+    "boundaries": "turbo boundaries",
+    "build": "turbo build  --affected",
+    "check": "ultracite check",
+    "ci": "ultracite check --type-aware --type-check --no-error-on-unmatched-pattern",
+    "clean": "git clean -xdf .turbo node_modules .venv",
+    "dev": "turbo dev",
+    "doctor": "ultracite doctor",
+    "fix": "ultracite fix",
+    "fix:unsafe": "ultracite fix --type-aware --type-check  --unsafe",
+    "prepare": "./scripts/init.sh"
+  },
+  "devDependencies": {
+    "@dotenv-run/cli": "catalog:",
+    "@turbo/gen": "catalog:",
+    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "tsdown": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "ultracite": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "overrides": {
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "bun@1.3.13",
+  "ignoreScripts": [
+    "sharp",
+    "unrs-resolver"
+  ],
+  "trustedDependencies": [
+    "sharp",
+    "unrs-resolver"
+  ]
+}

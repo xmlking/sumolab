@@ -1,0 +1,131 @@
+{
+  "explorer.sortOrder": "type",
+  "explorer.autoRevealExclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/.swc": true,
+    "**/build": true,
+    "**/coverage": true
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    ".env": ".env*",
+    "buf.yaml": "buf.work.yaml,buf.lock,buf.gen.yaml,buf.remote.gen.yaml",
+    ".gitignore": ".gitattributes,.vercelignore",
+    "README.md": "DEVELOPERS.md,CHANGELOG.md,CODE_OF_CONDUCT.md,CONTRIBUTING.md,LICENSE",
+    "Dockerfile": "*.Dockerfile,Dockerfile.*,compose*.yml,.dockerignore",
+    "vitest.config.ts": "vitest.*",
+    "package.json": ".npmrc,pnpm-lock.yaml,pnpm-workspace.yaml,bun.lock,bunfig.toml",
+    "flake.nix": "flake.lock"
+  },
+  "files.autoSave": "onFocusChange",
+  "files.autoSaveDelay": 1000,
+  "files.associations": {
+    ".env*": "properties",
+    "Makefile*": "makefile",
+    "*.mdx": "mdx",
+    "project.code-workspace": "jsonc",
+    "*.css": "tailwindcss"
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    ".idea": true,
+    "**/.turbo": true,
+    "**/.astro": true,
+    "**/.next": true,
+    "**/.swc": true,
+    "**/.vercel": true,
+    "**/node_modules": true,
+    ".pytest_cache": true,
+    "**/*.js": {
+      "when": "$(basename).ts"
+    },
+    "**/*.js.map": {
+      "when": "$(basename)"
+    }
+  },
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "search.exclude": {
+    "**/dist/": true,
+    "**/node_modules/": true,
+    "**/bun.lock": true,
+    "**/routeTree.gen.ts": true
+  },
+  // AI Tools
+  "chat.useAgentSkills": true,
+  // Vitest
+  "testing.automaticallyOpenTestResults": "neverOpen", // Don't open the test results automatically
+  "tailwindCSS.experimental.configFile": {
+    "packages/ui/src/styles/globals.css": "packages/ui/src/styles/**",
+    "packages/ui/src/styles/themes.css": "packages/ui/src/styles/**"
+  },
+  "tailwindCSS.classFunctions": ["cva", "cx", "cn"],
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "emmet.showExpandedAbbreviation": "never",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "explicit"
+  },
+  "workbench.editor.customLabels.patterns": {
+    "**/app/**/{page,layout,index}.{ts,tsx}": "(${dirname})/${filename}.${extname}",
+    "**/index.{ts,tsx}": "${dirname}/index.${extname}"
+  },
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[vue-html]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[handlebars]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[less]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[graphql]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  }
+}

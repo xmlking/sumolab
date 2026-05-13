@@ -1,0 +1,130 @@
+# https://github.com/xmlking/spectacular/blob/v0.4.2/compose.yml
+
+################################################################
+# Entrypoints configuration
+################################################################
+
+# Entrypoints definition
+#
+# Optional
+# Default:
+[entryPoints]
+[entryPoints.web]
+address = ":80"
+
+[entryPoints.web.http]
+[entryPoints.web.http.redirections]
+[entryPoints.web.http.redirections.entryPoint]
+to = "websecure"
+scheme = "https"
+
+[entryPoints.websecure]
+address = ":443"
+
+################################################################
+# Traefik logs configuration
+################################################################
+
+# Traefik logs
+# Enabled by default and log to stdout
+#
+# Optional
+#
+[log]
+level = "ERROR"
+# level = "DEBUG"
+
+################################################################
+# Access logs configuration
+################################################################
+
+# Enable access logs
+# By default it will write to stdout and produce logs in the textual
+# Common Log Format (CLF), extended with additional fields.
+#
+# Optional
+#
+# [accessLog]
+
+################################################################
+# API and dashboard configuration
+################################################################
+# Enable API and dashboard
+[api]
+
+# Enable the API in insecure mode
+#
+# Optional
+# Default: false
+#
+insecure = true
+
+# Enabled Dashboard
+#
+# Optional
+# Default: false
+#
+dashboard = true
+
+################################################################
+# Ping configuration
+################################################################
+# Enable ping
+[ping]
+
+# Name of the related entry point
+#
+# Optional
+# Default: "traefik"
+#
+# entryPoint = "traefik"
+
+################################################################
+# Docker configuration backend
+################################################################
+# Enable Docker configuration backend
+[providers.docker]
+
+# Docker server endpoint. Can be a tcp or a unix socket endpoint.
+#
+# Required
+# Default: "unix:///var/run/docker.sock"
+#
+endpoint = "unix:///var/run/docker.sock"
+
+# Default host rule.
+#
+# Optional
+# Default: "Host(`{{ normalize .Name }}`)"
+#
+
+# Expose containers by default in traefik
+#
+# Optional
+# Default: true
+#
+exposedByDefault = false # Only expose explicitly enabled containers
+
+
+################################################################
+# Certificate Resolvers (letsencrypt)
+################################################################
+[certificatesResolvers.le.acme]
+# email = "admin@example.com"
+storage = "/acme.json"
+# caServer = "https://acme-v02.api.letsencrypt.org/directory" # prod (default)
+# caServer = "https://acme-staging-v02.api.letsencrypt.org/directory" # staging
+# keyType = "EC256"
+
+[certificatesResolvers.le.acme.tlsChallenge]
+
+[certificatesResolvers.le.acme.httpChallenge]
+entryPoint = "web"
+
+
+################################################################
+# Other
+################################################################
+# [providers.http]
+# endpoint = "http://bot:10000/webhooks"
+

@@ -1,0 +1,97 @@
+# Streaming Services
+# QueenMQ, Kafka, Redpanda, Bufstream, Arroyo,  sqlflow etc.
+
+services:
+  ###########################################################################
+  # Queen MQ - A Streaming Data Processing engine
+  # Deployment: https://queenmq.com/server
+  #
+  # SERVICE URLS:
+  #   Dashboard:     https://queen-127-0-0-1.nip.io/
+  #   Dashboard:     https://queen-172-235-63-113.nip.io/
+  #   Dashboard:     https://queen.chinthagunta.com/
+  ###########################################################################
+  queen:
+    image: smartnessai/queen-mq:0.15.1
+    hostname: queen
+    container_name: queen
+    # profiles: [optional]
+    environment:
+      PG_HOST: postgres
+      PG_USER: ${POSTGRES_USER:-postgres}
+      PG_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PG_DB: ${POSTGRES_DB:-postgres}
+      DB_POOL_SIZE: 10
+      DEFAULT_SUBSCRIPTION_MODE: new
+      LOG_LEVEL: info
+      # LOG_FORMAT: json
+      RETENTION_INTERVAL: 10000
+      RETENTION_BATCH_SIZE: 50000
+      QUEEN_SYNC_ENABLED: true
+      # QUEEN_UDP_PEERS: localhost:6634,localhost:6635
+      QUEEN_UDP_NOTIFY_PORT: 6634
+      FILE_BUFFER_DIR: /tmp/queen/s1
+      SIDECAR_POOL_SIZE: 70
+      SIDECAR_MICRO_BATCH_WAIT_MS: 10
+      NUM_WORKERS: 4
+      POP_WAIT_INITIAL_INTERVAL_MS: 10
+      POP_WAIT_MAX_INTERVAL_MS: 1000
+      POP_WAIT_BACKOFF_MULTIPLIER: 2
+      POP_WAIT_BACKOFF_THRESHOLD: 1
+      DB_STATEMENT_TIMEOUT: 300000
+      STATS_RECONCILE_INTERVAL_MS: 30000
+      QUEEN_ENCRYPTION_KEY: ${QUEEN_ENCRYPTION_KEY}
+      JWT_ENABLED: true
+      JWT_ALGORITHM: auto
+      JWT_JWKS_URL: ${JWT_JWKS_URL:-http://host.docker.internal:3000/api/auth/jwks}
+    ports:
+      - 6632:6632
+    expose:
+      - "6632" # HTTP API
+      - "6634" # UDP Sync
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6632/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+      start_period: 2s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      traefik:
+        condition: service_healthy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.queen.tls: "true"
+      # traefik.http.routers.queen.tls.certresolver: le
+      traefik.http.routers.queen.entrypoints: web,websecure
+      traefik.http.routers.queen.rule: Host(`queen${DOMAIN_SUFFIX:-.localhost}`)
+      traefik.http.routers.queen.service: queen
+      traefik.http.services.queen.loadbalancer.server.port: "6632"
+      traefik.http.routers.queen.middlewares: auth
+  ###########################################################################
+  # events sync pipeline
+  # docker compose exec -it events sh
+  ###########################################################################
+  events:
+    image: ghcr.io//xmlking/sumolab/events:latest
+    hostname: events
+    container_name: events
+    profiles: [optional]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+      QUEEN_BASE_URL: http://queen:6632
+      QUEEN_TOKEN: ${QUEEN_TOKEN}
+      EVENTS_QUEUE_NAME: ${EVENTS_QUEUE_NAME:-flow-log-events}
+      EVENTS_QUEUE_CONSUMER_GROUP: ${EVENTS_QUEUE_CONSUMER_GROUP:-device-access-events-sync-production}
+      EVENTS_CONCURRENCY: 5
+      EVENTS_MAX_PARTITIONS_PER_POP: 10
+      EVENTS_BATCH_SIZE: 100
+      EVENTS_RENEW_LEASE_DURATION: 5000
+      EVENTS_SUBSCRIPTION_FROM: ${EVENTS_SUBSCRIPTION_FROM:-new}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      queen:
+        condition: service_healthy

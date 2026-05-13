@@ -1,0 +1,57 @@
+{
+  "recommendations": [
+    // General
+    "EditorConfig.EditorConfig",
+    "mikestead.dotenv",
+    "Tyriar.sort-lines",
+    "wmaurer.change-case",
+    "streetsidesoftware.code-spell-checker",
+    // AI
+    "github.copilot-chat",
+    // workspace
+
+    // vite-plus-extension-pack = vitest, Oxc - Oxlint + Oxfmt
+    "VoidZero.vite-plus-extension-pack",
+    "folke.vscode-monorepo-workspace",
+    "ms-azuretools.vscode-containers",
+    "unional.vscode-sort-package-json",
+    // Git
+    "eamodio.gitlens",
+    "github.github-vscode-theme",
+    "github.vscode-pull-request-github",
+    "github.vscode-github-actions",
+    "PKief.material-icon-theme",
+    "codezombiech.gitignore",
+    // Infra
+    "hashicorp.terraform",
+    // Dwawing
+    "pomdtr.excalidraw-editor",
+    // Database
+    "ms-ossdata.vscode-pgsql",
+    // inlang (i18n)
+    "inlang.vs-code-extension",
+    // markdown
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    "unifiedjs.vscode-mdx",
+    "bierner.markdown-mermaid",
+    "bpruitt-goddard.mermaid-markdown-syntax-highlighting",
+    // Rust
+    "tamasfe.even-better-toml",
+    // Protobuf
+    "bufbuild.vscode-buf",
+    // WebApps
+    "bradlc.vscode-tailwindcss",
+    "csstools.postcss",
+    "ms-playwright.playwright",
+    "vunguyentuan.vscode-css-variables",
+    "wix.vscode-import-cost",
+    "GraphQL.vscode-graphql",
+    "humao.rest-client",
+    // react/nextjs
+    "imgildev.vscode-nextjs-generator",
+    "hareeshbhittam.next-js-snippets-latest"
+  ],
+  // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
+  "unwantedRecommendations": ["moalamri.inline-fold"]
+}

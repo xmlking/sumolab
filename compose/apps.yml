@@ -1,0 +1,101 @@
+  # Apps
+# Astra, MCP Gateway, LLM Gateway
+
+services:
+  ###########################################################################
+  # astra
+  # docker compose exec -it astra
+  # http://localhost:8000/docs
+  # http://localhost:8000/redoc
+  # "http://localhost:8000/v1/health
+  ###########################################################################
+  astra-api:
+    image: ghcr.io/xmlking/astra-agno:latest
+    hostname: astra-api
+    container_name: astra-api
+    profiles: [optional]
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_DATABASE: ${POSTGRES_DB:-postgres}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AZURE_OPENAI_API_KEY: ${AZURE_API_KEY}
+      AZURE_OPENAI_ENDPOINT: https://${AZURE_RESOURCE_NAME}.openai.azure.com/
+      DEFAULT_LANGUAGE_MODEL: ${DEFAULT_LANGUAGE_MODEL}
+      MCP_GATEWAY_URL: http://mcp-gateway:8811/sse
+      RUNTIME_ENV: prod
+      LOG_LEVEL: INFO
+      AGNO_MONITOR: false
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    entrypoint: ["fastapi", "run", "--port", "8000"]
+    command: ["app/agui.py"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mcp-gateway:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
+        reservations:
+          memory: 32M
+          cpus: "0.05"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+  ###########################################################################
+  # docker MCP gateway
+  # NOTE: add `github.personal_access_token='ghp_XXX` to .env
+  ###########################################################################
+  mcp-gateway:
+    image: docker/mcp-gateway:latest
+    hostname: mcp-gateway
+    container_name: mcp-gateway
+    restart: unless-stopped
+    profiles: [optional]
+    command:
+      # - --transport=streaming
+      - --transport=sse
+      - --servers=postgres,github-official,duckduckgo
+      - --secrets=/run/secrets/database_url
+    # use_api_socket: true # for orbStack, use volumes
+    volumes:
+      - ~/.orbstack/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8811:8811
+    secrets:
+      - database_url
+    healthcheck:
+      test: wget -O- http://localhost:8811/health
+      interval: 5s
+      timeout: 2s
+      retries: 3
+      start_period: 2s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+          cpus: '0.1'
+        reservations:
+          memory: 32M
+          cpus: '0.05'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

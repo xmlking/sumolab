@@ -1,0 +1,24 @@
+{
+  "name": "events",
+  "private": true,
+  "type": "module",
+  "module": "src/index.js",
+  "scripts": {
+    "build": "bun build src/index.js --outdir=./dist --target=bun",
+    "clean": "git clean -xdf test-results .cache .turbo dist coverage node_modules",
+    "dev": "dotenv-run -v -- bun --watch src/index.js",
+    "dev:debug": "QUEEN_CLIENT_LOG=true dotenv-run -v -- bun --watch src/index.js",
+    "start": "dotenv-run -v -- bun src/index.js",
+    "test": "dotenv-run -v -- bun test",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "queen-mq": "^0.15.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.13"
+  },
+  "peerDependencies": {
+    "typescript": "6.0.3"
+  }
+}

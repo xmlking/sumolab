@@ -1,0 +1,133 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "stream",
+  "cacheMaxAge": "7d",
+  "globalEnv": [
+    "ANALYZE",
+    "PORT",
+    "LOG_LEVEL",
+    "MASTRA_BASE_URL",
+    "AGNO_BASE_URL",
+    "DB_MIGRATING",
+    "TAVILY_API_KEY",
+    "EXTERNAL_JWT_SECRET",
+    "FLAGS_SECRET",
+    "INKEEP_API_KEY",
+    "PRODUCT_NAME",
+    "CONTACT_EMAIL",
+    "BASE_URL",
+    "BETTER_AUTH_ADMIN_EMAIL",
+    "BETTER_AUTH_ADMIN_PASSWORD",
+    "EMAIL_FROM",
+    "EMAIL_TO",
+    "S3_ENDPOINT",
+    "S3_ACCESS_KEY_ID",
+    "S3_REGION",
+    "S3_IMAGES_BUCKET",
+    "S3_AGENTS_BUCKET",
+    "BETTER_AUTH_*",
+    "TURNSTILE_SITE_*",
+    "TURNSTILE_SECRET_*",
+    "GITHUB_*",
+    "GITHUB_CLIENT_*",
+    "GOOGLE_CLIENT_*",
+    "DEFAULT_*",
+    "AZURE_*",
+    "OPENAI_*",
+    "RESEND_*",
+    "STRIPE_*",
+    "DATABASE_*",
+    "NEXT_*",
+    "UNSPLASH_*",
+    "SMTP_*"
+  ],
+  "globalPassThroughEnv": [
+    "CI",
+    "GITHUB_TOKEN",
+    "NODE_ENV",
+    "VERCEL",
+    "VERCEL_ENV",
+    "VERCEL_URL",
+    "VERCEL_TOKEN",
+    "VERCEL_ORG_ID",
+    "VERCEL_PROJECT_ID",
+    "VERCEL_GIT_COMMIT_REF",
+    "SENTRY_AUTH_TOKEN",
+    "SENTRY_ORG",
+    "SENTRY_PROJECT",
+    "SKIP_ENV_VALIDATION",
+    "npm_lifecycle_event"
+  ],
+  "globalDependencies": [".env", "bun.lock"],
+  "tasks": {
+    "analyze": {
+      "dependsOn": ["^analyze"]
+    },
+    "build": {
+      "description": "Compiles TypeScript and bundles the application",
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [
+        ".next/**",
+        "dist/**",
+        "!.next/cache/**",
+        "next-env.d.ts",
+        ".react-email/**"
+      ]
+    },
+    "typegen": {
+      "dependsOn": ["^typegen"],
+      "outputs": ["**/*.d.ts"],
+      "cache": false
+    },
+    "test": {
+      "description": "Runs the test suite with coverage",
+      "dependsOn": ["transit"]
+    },
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
+    "test:ui": {},
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:coverage": {
+      "outputs": ["coverage/**"]
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "outputLogs": "new-only",
+      "inputs": ["tests/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["typegen", "transit"],
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    },
+    "env": {
+      "cache": false,
+      "persistent": true
+    },
+    "//#clean": {
+      "cache": false
+    },
+    "//#test:root": {
+      "outputs": ["coverage/**"]
+    },
+    "//#test:watch:root": {
+      "cache": false,
+      "persistent": true
+    },
+    "//#ci": {},
+    "//#check": {},
+    "//#fix": {},
+    "//#fix:unsafe": {}
+  }
+}
