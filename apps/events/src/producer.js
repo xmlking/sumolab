@@ -36,13 +36,7 @@ const policies = [
   "055471c9-72d9-4790-9200-6c1f622ea12a",
   "06354d92-d5bf-4cf8-bf49-4bd14c7e3b40",
 ];
-const actions = [
-  "block",
-  "callout_inspection",
-  "callout_terminating",
-  "callout_unknown",
-  "permit",
-];
+const actions = ["block", "callout_inspection", "callout_terminating", "callout_unknown", "permit"];
 const directions = ["egress", "ingress"];
 const apps = [
   "\\device\\harddiskvolume3\\programdata\\microsoft\\windows defender\\platform\\4.18.26020.6-0\\msmpeng.exe",
@@ -55,8 +49,7 @@ const apps = [
 const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const randIp = () =>
   `${rand([10, 172, 192])}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`;
-const randTimestamp = () =>
-  Math.floor(Date.now() / 1000) - Math.floor(Math.random() * 86400);
+const randTimestamp = () => Math.floor(Date.now() / 1000) - Math.floor(Math.random() * 86400);
 
 console.log("🚀 Starting producer...");
 console.log({

@@ -45,7 +45,7 @@ await queen
   .autoAck(false)
   .batch(10)
   .each()
-  .consume(async (message) => {
+  .consume(async (_message) => {
     // process message
     return {
       nextPartition: "p2", // This will be available in the result object
@@ -69,6 +69,6 @@ await queen
       .commit();
     console.log("Successfully processed message and pushed to next partition");
   })
-  .onError(async (message, error) => {
+  .onError(async (message, _error) => {
     await queen.ack(message, false, { group: "analytics" });
   });

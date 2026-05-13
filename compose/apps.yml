@@ -1,4 +1,4 @@
-  # Apps
+# Apps
 # Astra, MCP Gateway, LLM Gateway
 
 services:
@@ -90,10 +90,10 @@ services:
       resources:
         limits:
           memory: 64M
-          cpus: '0.1'
+          cpus: "0.1"
         reservations:
           memory: 32M
-          cpus: '0.05'
+          cpus: "0.05"
     logging:
       driver: "json-file"
       options:

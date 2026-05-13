@@ -46,10 +46,10 @@ services:
       resources:
         limits:
           memory: 128M
-          cpus: '0.25'
+          cpus: "0.25"
         reservations:
           memory: 32M
-          cpus: '0.05'
+          cpus: "0.05"
     logging:
       driver: "json-file"
       options:

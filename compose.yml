@@ -16,7 +16,6 @@
 #   - apps.yml:       n8n, Paperless-ngx, Nextcloud
 #   - streaming.yml:  QueenMQ, NATS, etc.
 
-
 include:
   - path: compose/base.yml
   - path: compose/core.yml
@@ -26,6 +25,3 @@ include:
   - path: compose/streaming.yml
   # - path: compose/apps.yml
   # - path: compose/monitoring.yml
-
-
-

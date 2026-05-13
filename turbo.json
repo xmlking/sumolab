@@ -67,13 +67,7 @@
       "description": "Compiles TypeScript and bundles the application",
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [
-        ".next/**",
-        "dist/**",
-        "!.next/cache/**",
-        "next-env.d.ts",
-        ".react-email/**"
-      ]
+      "outputs": [".next/**", "dist/**", "!.next/cache/**", "next-env.d.ts", ".react-email/**"]
     },
     "typegen": {
       "dependsOn": ["^typegen"],
