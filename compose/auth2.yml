@@ -44,13 +44,15 @@ services:
       PG_PASSWORD: postgres
       QUEEN_SERVER_URL: http://queen:6632
       EXTERNAL_JWKS_URL: ${JWT_JWKS_URL}
+      INTERNAL_JWT_SIGNING_KEY: ${INTERNAL_JWT_SIGNING_KEY}
       JWT_EXPIRES_IN: 24h
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      GOOGLE_REDIRECT_URI: https://auth${DOMAIN_SUFFIX:-.localhost}/api/oauth/google/callback
+      GOOGLE_REDIRECT_URI: https://auth${DOMAIN_SUFFIX:-.localhost}/api/auth/google/callback
       GOOGLE_ALLOWED_DOMAINS: ${GOOGLE_ALLOWED_DOMAINS}
       GOOGLE_AUTO_PROVISION: "true"
-      NODE_ENV: production
+      FORWARD_AUTH_ALLOWED_EMAILS: ${FORWARD_AUTH_ALLOWED_EMAILS}
+      NODE_ENV: development
     deploy:
       resources:
         limits:

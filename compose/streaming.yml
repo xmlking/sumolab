@@ -43,7 +43,8 @@ services:
       QUEEN_ENCRYPTION_KEY: ${QUEEN_ENCRYPTION_KEY}
       JWT_ENABLED: true
       JWT_ALGORITHM: auto
-      JWT_JWKS_URL: ${JWT_JWKS_URL:-http://host.docker.internal:3000/api/auth/jwks}
+      JWT_SECRET: ${INTERNAL_JWT_SIGNING_KEY}
+      # JWT_JWKS_URL: ${JWT_JWKS_URL:-http://host.docker.internal:3000/api/auth/jwks}
     ports:
       - 6632:6632
     expose:
