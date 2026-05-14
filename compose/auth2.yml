@@ -1,0 +1,81 @@
+# Authentication (SSO) Services
+# Tinyauth
+
+services:
+  ###########################################################################
+  # Authentication Middleware — Tinyauth
+  # Single-user OAuth gate for all public-facing services.
+  # Supports Google and GitHub OAuth via presets (no manual URL config needed).
+  #
+  # Prerequisites (fill in host .env before starting):
+  #   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET   → Google Cloud Console → OAuth 2.0 Client IDs
+  #   GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET   → github.com/settings/developers → OAuth Apps
+  #   TINYAUTH_ALLOWED_EMAILS                  → comma-separated list of allowed emails
+  #   Callback URLs must be registered in each OAuth app:
+  #     Google:  https://auth.<DOMAIN>/api/oauth/callback/google
+  #     GitHub:  https://auth.<DOMAIN>/api/oauth/callback/github
+  #
+  # Basically any service that has the label
+  # "traefik.http.routers.<name>.middlewares=traefik-forward-auth"
+  # will be protected by this middleware, which requires Google authentication.
+  # In our case, we use it for the Traefik Console, Grafana and Prometheus.
+  ###########################################################################
+  auth:
+    image: queen-proxy:latest
+    hostname: auth
+    container_name: auth
+    restart: unless-stopped
+    depends_on:
+      traefik:
+        condition: service_healthy
+    expose:
+      - "3000"
+    environment:
+      FORWARD_AUTH_ENABLED: "true"
+      AUTH_HOST: auth${DOMAIN_SUFFIX:-.localhost}
+      COOKIE_DOMAIN: .nip.io
+      # FORWARD_AUTH_ALLOWED_REDIRECT_HOSTS: grafana-127-0-0-1.nip.io,prom-127-0-0-1.nip.io,queen-127-0-0-1.nip.io,traefik-127-0-0-1.nip.io
+      # FORWARD_AUTH_EMIT_HEADERS: Authorization,X-Auth-User,X-Auth-Email,X-Auth-Role,X-Auth-Sub
+      FORWARD_AUTH_EMIT_HEADERS: Authorization
+      # plus your existing JWT_SECRET, GOOGLE_*, PG_* envs
+      PG_HOST: postgres
+      PG_DB: postgres
+      PG_USER: postgres
+      PG_PASSWORD: postgres
+      QUEEN_SERVER_URL: http://queen:6632
+      EXTERNAL_JWKS_URL: ${JWT_JWKS_URL}
+      JWT_EXPIRES_IN: 24h
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URI: https://auth${DOMAIN_SUFFIX:-.localhost}/api/oauth/google/callback
+      GOOGLE_ALLOWED_DOMAINS: ${GOOGLE_ALLOWED_DOMAINS}
+      GOOGLE_AUTO_PROVISION: "true"
+      NODE_ENV: production
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
+        reservations:
+          memory: 32M
+          cpus: "0.05"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.auth.tls: "true"
+      # traefik.http.routers.auth.tls.certresolver: le
+      traefik.http.routers.auth.entrypoints: web,websecure
+      traefik.http.routers.auth.rule: Host(`auth${DOMAIN_SUFFIX:-.localhost}`)
+      traefik.http.routers.auth.service: auth
+      traefik.http.services.auth.loadbalancer.server.port: "3000"
+      traefik.http.middlewares.auth.forwardauth.address: http://auth:3000/api/auth/forward-auth
+      # traefik.http.middlewares.queen-fa.forwardauth.authResponseHeaders: Authorization,X-Auth-User,X-Auth-Email,X-Auth-Role,X-Auth-Sub
+      traefik.http.middlewares.auth.forwardauth.authResponseHeaders: Authorization
+      traefik.http.middlewares.auth.forwardauth.trustForwardHeader: "true"
+
+volumes:
+  tinyauth_data:
