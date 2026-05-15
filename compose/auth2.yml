@@ -61,6 +61,12 @@ services:
       GOOGLE_ALLOWED_DOMAINS: ${GOOGLE_ALLOWED_DOMAINS}
       GOOGLE_AUTO_PROVISION: "true"
       GOOGLE_DEFAULT_ROLE: read-only
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+      start_period: 2s
     deploy:
       resources:
         limits:
