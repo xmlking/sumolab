@@ -1,19 +1,22 @@
-# Authentication (SSO) Services
-# Tinyauth
+# Traefik Forward Auth Services
+# Queen Forward Auth
 
 services:
   ###########################################################################
-  # Authentication Middleware — Tinyauth
+  # Authentication Middleware — Queen
   # Single-user OAuth gate for all public-facing services.
   # Supports Google and GitHub OAuth via presets (no manual URL config needed).
   #
   # Prerequisites (fill in host .env before starting):
   #   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET   → Google Cloud Console → OAuth 2.0 Client IDs
   #   GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET   → github.com/settings/developers → OAuth Apps
-  #   TINYAUTH_ALLOWED_EMAILS                  → comma-separated list of allowed emails
+  #   GOOGLE_ALLOWED_EMAILS                    → comma-separated list of allowed emails or regex patterns (e.g. "*@example.com")
+  #   INTERNAL_JWT_PRIVATE_KEY_PEM             → generate with `openssl genpkey -algorithm Ed25519 -out internal-jwt.pem`
+  #   EXTERNAL_JWKS_URL                        → URL of external JWKS endpoint for validating incoming JWTs (optional)
+  #
   #   Callback URLs must be registered in each OAuth app:
-  #     Google:  https://auth.<DOMAIN>/api/oauth/callback/google
-  #     GitHub:  https://auth.<DOMAIN>/api/oauth/callback/github
+  #     Google:  https://auth.<DOMAIN>/api/auth/callback/google
+  #     GitHub:  https://auth.<DOMAIN>/api/auth/callback/github
   #
   # Basically any service that has the label
   # "traefik.http.routers.<name>.middlewares=traefik-forward-auth"
@@ -21,7 +24,7 @@ services:
   # In our case, we use it for the Traefik Console, Grafana and Prometheus.
   ###########################################################################
   auth:
-    image: ghcr.io/steveiliop56/tinyauth:v5
+    image: queen-proxy:latest
     hostname: auth
     container_name: auth
     restart: unless-stopped
@@ -31,29 +34,41 @@ services:
     expose:
       - "3000"
     environment:
-      # Tinyauth's own public URL — used to build OAuth callback redirects
-      TINYAUTH_APPURL: https://auth${DOMAIN_SUFFIX:-.localhost}
-      # Allowed email addresses (exact match, comma-separated)
-      TINYAUTH_OAUTH_WHITELIST: ${TINYAUTH_ALLOWED_EMAILS}
-      # Comma-separated list of users (username:hashed_password)
-      TINYAUTH_AUTH_USERS: ${TINYAUTH_AUTH_USERS}
-      # Secure cookies — true because traefik delivers HTTPS to browsers
-      TINYAUTH_AUTH_SECURECOOKIE: true
-      # Disable analytics
-      TINYAUTH_ANALYTICS_ENABLED: false
-      # Google OAuth (preset: URLs and scopes auto-configured)
-      TINYAUTH_OAUTH_PROVIDERS_GOOGLE_CLIENTID: ${GOOGLE_CLIENT_ID}
-      TINYAUTH_OAUTH_PROVIDERS_GOOGLE_CLIENTSECRET: ${GOOGLE_CLIENT_SECRET}
-      # GitHub OAuth (preset: URLs, read:user + user:email scopes auto-configured)
-      TINYAUTH_OAUTH_PROVIDERS_github_CLIENTID: ${GITHUB_CLIENT_ID}
-      TINYAUTH_OAUTH_PROVIDERS_github_CLIENTSECRET: ${GITHUB_CLIENT_SECRET}
-      TZ: ${TIMEZONE}
+      NODE_ENV: production
+      FORWARD_AUTH_ENABLED: "true"
+      AUTH_HOST: auth${DOMAIN_SUFFIX:-.localhost}
+      COOKIE_DOMAIN: .nip.io
+      FORWARD_AUTH_ALWAYS_MINT: "true"
+      FORWARD_AUTH_EMIT_HEADERS: Authorization
+      # FORWARD_AUTH_EMIT_HEADERS: Authorization,X-Auth-User,X-Auth-Email,X-Auth-Role,X-Auth-Groups, X-Auth-Sub
+      ## PostgreSQL
+      PG_HOST: postgres
+      PG_PORT: "5432"
+      PG_DB: postgres
+      PG_USER: postgres
+      PG_PASSWORD: postgres
+      ## Internal JWT
+      # use `openssl genpkey -algorithm ed25519 -out private_key.pem` to generate a new key pair
+      INTERNAL_JWT_PRIVATE_KEY_PEM: ${INTERNAL_JWT_PRIVATE_KEY_PEM}
+      # INTERNAL_JWT_EXPIRES_IN: 15m
+      ## External JWT
+      EXTERNAL_JWKS_URL: ${EXTERNAL_JWKS_URL}
+      # EXTERNAL_ISSUER: ${EXTERNAL_ISSUER}
+      # EXTERNAL_AUDIENCE: queen-proxy
+      ## Google Sign-In
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URI: https://auth${DOMAIN_SUFFIX:-.localhost}/api/auth/callback/google
+      GOOGLE_ALLOWED_DOMAINS: ${GOOGLE_ALLOWED_DOMAINS}
+      GOOGLE_ALLOWED_EMAILS: ${GOOGLE_ALLOWED_EMAILS}
+      GOOGLE_AUTO_PROVISION: "true"
+      GOOGLE_DEFAULT_ROLE: "admin"
     healthcheck:
-      test: ["CMD", "tinyauth", "healthcheck"]
-      interval: 30s
-      timeout: 5s
-      start_period: 5s
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 5s
+      timeout: 2s
       retries: 3
+      start_period: 2s
     deploy:
       resources:
         limits:
@@ -67,8 +82,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    volumes:
-      - tinyauth_data:/data
     labels:
       traefik.enable: "true"
       traefik.http.routers.auth.tls: "true"
@@ -77,9 +90,10 @@ services:
       traefik.http.routers.auth.rule: Host(`auth${DOMAIN_SUFFIX:-.localhost}`)
       traefik.http.routers.auth.service: auth
       traefik.http.services.auth.loadbalancer.server.port: "3000"
-      traefik.http.middlewares.auth.forwardauth.address: http://auth:3000/api/auth/traefik
-      # traefik.http.middlewares.auth.forwardauth.authResponseHeaders: X-Forwarded-User
-      # traefik.http.middlewares.auth.forwardauth.trustForwardHeader: true
+      traefik.http.middlewares.auth.forwardauth.address: http://auth:3000/api/auth/forward-auth
+      # traefik.http.middlewares.queen-fa.forwardauth.authResponseHeaders: Authorization,X-Auth-User,X-Auth-Email,X-Auth-Role,X-Auth-Sub
+      traefik.http.middlewares.auth.forwardauth.authResponseHeaders: Authorization
+      traefik.http.middlewares.auth.forwardauth.trustForwardHeader: "true"
 
 volumes:
   tinyauth_data:
