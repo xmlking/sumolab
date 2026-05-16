@@ -91,8 +91,8 @@ services:
       traefik.http.routers.auth.service: auth
       traefik.http.services.auth.loadbalancer.server.port: "3000"
       traefik.http.middlewares.auth.forwardauth.address: http://auth:3000/api/auth/forward-auth
-      # traefik.http.middlewares.queen-fa.forwardauth.authResponseHeaders: Authorization,X-Auth-User,X-Auth-Email,X-Auth-Role,X-Auth-Sub
-      traefik.http.middlewares.auth.forwardauth.authResponseHeaders: Authorization
+      traefik.http.middlewares.auth.forwardauth.authResponseHeaders: Authorization,X-Auth-User,X-Auth-Email,X-Auth-Role,X-Auth-Groups,X-Auth-Sub
+      # traefik.http.middlewares.auth.forwardauth.authResponseHeaders: Authorization
       traefik.http.middlewares.auth.forwardauth.trustForwardHeader: "true"
 
 volumes:

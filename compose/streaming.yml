@@ -69,6 +69,7 @@ services:
       traefik.http.routers.queen.service: queen
       traefik.http.services.queen.loadbalancer.server.port: "6632"
       traefik.http.routers.queen.middlewares: auth
+      traefik.http.middlewares.queen.headers.customRequestHeaders.X-Forward-Auth-Headers: Authorization
   ###########################################################################
   # events sync pipeline
   # docker compose exec -it events sh
