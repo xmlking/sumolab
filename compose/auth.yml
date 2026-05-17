@@ -39,8 +39,7 @@ services:
       AUTH_HOST: auth${DOMAIN_SUFFIX:-.localhost}
       COOKIE_DOMAIN: .nip.io
       FORWARD_AUTH_ALWAYS_MINT: "true"
-      FORWARD_AUTH_EMIT_HEADERS: Authorization
-      # FORWARD_AUTH_EMIT_HEADERS: Authorization,X-Auth-User,X-Auth-Email,X-Auth-Role,X-Auth-Groups, X-Auth-Sub
+      FORWARD_AUTH_EMIT_HEADERS: Authorization,X-Auth-User,X-Auth-Email,X-Auth-Role,X-Auth-Groups,X-Auth-Sub
       ## PostgreSQL
       PG_HOST: postgres
       PG_PORT: "5432"
@@ -69,6 +68,11 @@ services:
       timeout: 2s
       retries: 3
       start_period: 2s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      traefik:
+        condition: service_healthy
     deploy:
       resources:
         limits:
