@@ -22,15 +22,17 @@ services:
   # "traefik.http.routers.<name>.middlewares=traefik-forward-auth"
   # will be protected by this middleware, which requires Google authentication.
   # In our case, we use it for the Traefik Console, Grafana and Prometheus.
+  #
+  # SERVICE URLS:
+  #   Wellknown:     https://auth-127-0-0-1.nip.io/.well-known/jwks.json
+  #   Config:        https://auth-127-0-0-1.nip.io/api/auth/config
+  #   Forward Auth:  https://auth-127-0-0-1.nip.io/api/auth/forward-auth
   ###########################################################################
   auth:
-    image: queen-proxy:latest
+    image: ghcr.io/xmlking/sumolab/queen-proxy:latest
     hostname: auth
     container_name: auth
     restart: unless-stopped
-    depends_on:
-      traefik:
-        condition: service_healthy
     expose:
       - "3000"
     environment:
@@ -62,12 +64,6 @@ services:
       GOOGLE_ALLOWED_EMAILS: ${GOOGLE_ALLOWED_EMAILS}
       GOOGLE_AUTO_PROVISION: "true"
       GOOGLE_DEFAULT_ROLE: "admin"
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
-      interval: 5s
-      timeout: 2s
-      retries: 3
-      start_period: 2s
     depends_on:
       postgres:
         condition: service_healthy

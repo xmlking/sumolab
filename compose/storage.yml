@@ -15,7 +15,7 @@ services:
   #   MinIO Console:  https://minio-console.chinthagunta.com/
   ###########################################################################
   minio:
-    image: minio/minio:latest
+    image: cgr.dev/chainguard/minio:latest
     hostname: minio
     container_name: minio
     restart: always

@@ -17,7 +17,7 @@ bun install turbo @dotenv-run/cli --global
 ## Setup
 
 ```shell
-# install dependencies 
+# install dependencies
 bun i
 # format code
 turbo check

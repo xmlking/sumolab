@@ -7,7 +7,7 @@ services:
   # docker compose exec -it astra
   # http://localhost:8000/docs
   # http://localhost:8000/redoc
-  # "http://localhost:8000/v1/health
+  # http://localhost:8000/v1/health
   ###########################################################################
   astra-api:
     image: ghcr.io/xmlking/astra-agno:latest

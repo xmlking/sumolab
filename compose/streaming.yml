@@ -12,7 +12,7 @@ services:
   #   Dashboard:     https://queen.chinthagunta.com/
   ###########################################################################
   queen:
-    image: smartnessai/queen-mq:0.15.1
+    image: smartnessai/queen-mq:0.15.5
     hostname: queen
     container_name: queen
     # profiles: [optional]
@@ -75,7 +75,7 @@ services:
   # docker compose exec -it events sh
   ###########################################################################
   events:
-    image: ghcr.io//xmlking/sumolab/events:latest
+    image: ghcr.io/xmlking/sumolab/events:latest
     hostname: events
     container_name: events
     profiles: [optional]
