@@ -1,7 +1,35 @@
 # Apps
-# Astra, MCP Gateway, LLM Gateway
+# Events, Astra, MCP Gateway, LLM Gateway
 
 services:
+  ###########################################################################
+  # events sync pipeline
+  # docker compose exec -it events sh
+  ###########################################################################
+  events:
+    image: ghcr.io/xmlking/sumolab/events:latest
+    hostname: events
+    container_name: events
+    profiles: [optional]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+      QUEEN_BASE_URL: http://queen:6632
+      QUEEN_TOKEN: ${QUEEN_TOKEN}
+      EVENTS_QUEUE_NAME: ${EVENTS_QUEUE_NAME:-flow-log-events}
+      EVENTS_QUEUE_CONSUMER_GROUP: ${EVENTS_QUEUE_CONSUMER_GROUP:-device-access-events-sync-production}
+      EVENTS_CONCURRENCY: 5
+      EVENTS_MAX_PARTITIONS_PER_POP: 10
+      EVENTS_BATCH_SIZE: 100
+      EVENTS_RENEW_LEASE_DURATION: 5000
+      EVENTS_SUBSCRIPTION_FROM: ${EVENTS_SUBSCRIPTION_FROM:-new}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      queen:
+        condition: service_healthy
+      auth:
+        condition: service_healthy
   ###########################################################################
   # astra
   # docker compose exec -it astra

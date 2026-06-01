@@ -22,6 +22,6 @@ include:
   - path: compose/auth.yml
   - path: compose/database.yml
   - path: compose/storage.yml
-  - path: compose/streaming.yml
-  # - path: compose/apps.yml
+  - path: compose/broker.yml
+  - path: compose/apps.yml
   # - path: compose/monitoring.yml
